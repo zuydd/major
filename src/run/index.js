@@ -1,12 +1,12 @@
 import colors from "colors";
 import dayjs from "dayjs";
+import datetimeHelper from "../helpers/datetime.js";
 import delayHelper from "../helpers/delay.js";
 import fileHelper from "../helpers/file.js";
 import authService from "../services/auth.js";
 import dailyService from "../services/daily.js";
 import gameService from "../services/game.js";
-// import taskService from "../services/task.js";
-import datetimeHelper from "../helpers/datetime.js";
+import taskService from "../services/task.js";
 import userService from "../services/user.js";
 
 // Điều chỉnh khoảng cách thời gian chạy vòng lặp đầu tiên giữa các luồng tránh bị spam request (tính bằng giây)
@@ -79,7 +79,7 @@ const run = async (user, index) => {
     }
 
     await dailyService.checkin(user);
-    // await taskService.handleTask(user);
+    await taskService.handleTask(user);
     const awaitTime = await gameService.handleGame(user);
     user.log.log(
       colors.magenta(
