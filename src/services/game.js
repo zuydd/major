@@ -1,7 +1,9 @@
 import colors from "colors";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
 import delayHelper from "../helpers/delay.js";
 import generatorHelper from "../helpers/generator.js";
+dayjs.extend(utc);
 
 class GameService {
   constructor() {}
@@ -175,6 +177,77 @@ class GameService {
     }
   }
 
+  async startGameDurov(user) {
+    try {
+      const { data } = await user.http.get("durov/");
+      if (data?.success) {
+        user.log.log(
+          `Bắt đầu chơi game Durov, nhận thưởng sau: ${colors.blue("5 giây")}`
+        );
+        return -1;
+      } else {
+        return 10;
+      }
+    } catch (error) {
+      if (error.response?.status === 400 && error.response?.data?.detail) {
+        const until =
+          Math.floor(error.response?.data?.detail.blocked_until) * 1000;
+
+        const diffTime = dayjs(until).add(2, "hour").diff(dayjs(), "minutes");
+        user.log.log(
+          `Đã hết lượt chơi game Durov, chờ lượt mới sau: ${colors.blue(
+            diffTime + ` phút`
+          )}`
+        );
+        return diffTime;
+      } else {
+        user.log.logError(
+          `Chơi game Durov thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
+        );
+        return 10;
+      }
+    }
+  }
+
+  async claimGameDurov(user) {
+    const answer = user.durov.answer;
+    const body = {
+      choice_1: answer[0],
+      choice_2: answer[1],
+      choice_3: answer[2],
+      choice_4: answer[3],
+    };
+
+    try {
+      const { data } = await user.http.post("durov/", body);
+      if (data?.correct) {
+        const tomorrowMidnightUtc = dayjs
+          .utc()
+          .add(1, "day")
+          .startOf("day")
+          .add(2, "hour");
+        const nowUtc = dayjs.utc();
+        const minutesDifference = tomorrowMidnightUtc.diff(nowUtc, "minute");
+        user.log.log(
+          `Chơi game Durov thành công, phần thưởng: ${colors.yellow(
+            "5000" + user.currency
+          )}, chờ lượt mới sau ${colors.blue(`${minutesDifference} phút`)}`
+        );
+        return {
+          status: true,
+          diff: minutesDifference,
+        };
+      } else {
+        throw new Error(`Chơi game Durov thất bại`);
+      }
+    } catch (error) {
+      user.log.logError(
+        `Nhận thưởng chơi game Durov thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
+      );
+      return false;
+    }
+  }
+
   async handleGame(user) {
     let countdown = 480;
 
@@ -226,6 +299,27 @@ class GameService {
       countdown = infoGameSwipeCoin;
     }
 
+    // Durov
+    const nowUtc = dayjs.utc();
+    const dayUtc = nowUtc.format("DD-MM-YYYY");
+    if (dayUtc === user?.durov?.day) {
+      const infoGameDurov = await this.startGameDurov(user);
+      if (infoGameDurov === -1) {
+        await delayHelper.delay(5);
+        const infoClaim = await this.claimGameDurov(user);
+        if (infoClaim?.status) {
+          if (countdown > infoClaim.diff) {
+            countdown = infoClaim.diff;
+          }
+        } else {
+          countdown = 10;
+        }
+      } else if (infoGameDurov < countdown) {
+        countdown = infoGameDurov;
+      }
+    } else if (20 < countdown) {
+      countdown = 20;
+    }
     return countdown;
   }
 }

@@ -6,22 +6,25 @@ import authService from "../services/auth.js";
 import dailyService from "../services/daily.js";
 import gameService from "../services/game.js";
 // import taskService from "../services/task.js";
+import datetimeHelper from "../helpers/datetime.js";
 import userService from "../services/user.js";
 
 // Điều chỉnh khoảng cách thời gian chạy vòng lặp đầu tiên giữa các luồng tránh bị spam request (tính bằng giây)
-const DELAY_ACC = 30;
+const DELAY_ACC = 10;
 // Đặt số lần thử kết nối lại tối đa khi proxy lỗi, nếu thử lại quá số lần cài đặt sẽ dừng chạy tài khoản đó và ghi lỗi vào file log
 const MAX_RETRY_PROXY = 20;
 // Đặt số lần thử đăng nhập tối đa khi đăng nhập lỗi, nếu thử lại quá số lần cài đặt sẽ dừng chạy tài khoản đó và ghi lỗi vào file log
 const MAX_RETRY_LOGIN = 20;
+const countdownList = [];
 
-const run = async (user) => {
+const run = async (user, index) => {
   // console.log(user);
 
   let countRetryProxy = 0;
   let countRetryLogin = 0;
   await delayHelper.delay((user.index - 1) * DELAY_ACC);
   while (true) {
+    countdownList[index].running = true;
     // Kiểm tra kết nối proxy
     let isProxyConnected = false;
     while (!isProxyConnected) {
@@ -78,9 +81,17 @@ const run = async (user) => {
     await dailyService.checkin(user);
     // await taskService.handleTask(user);
     const awaitTime = await gameService.handleGame(user);
-    console.log(awaitTime);
-
-    await delayHelper.delay((100 + 1) * 60);
+    user.log.log(
+      colors.magenta(
+        `Đã hoàn thành hết công việc, chạy lại sau: ${colors.blue(
+          `${awaitTime + 1} phút`
+        )}`
+      )
+    );
+    countdownList[index].time = (awaitTime + 1) * 60;
+    countdownList[index].created = dayjs().unix();
+    countdownList[index].running = false;
+    await delayHelper.delay((awaitTime + 1) * 60);
   }
 };
 
@@ -108,5 +119,52 @@ console.log("");
 const users = await userService.loadUser();
 
 for (const [index, user] of users.entries()) {
-  run(user);
+  countdownList.push({
+    running: true,
+    time: 480 * 60,
+    created: dayjs().unix(),
+  });
+  run(user, index);
 }
+
+let isLog = false;
+setInterval(() => {
+  const isPauseAll = !countdownList.some((item) => item.running === true);
+
+  if (isPauseAll) {
+    if (!isLog) {
+      console.log(
+        "========================================================================================="
+      );
+      isLog = true;
+    }
+    const minTimeCountdown = countdownList.reduce((minItem, currentItem) => {
+      // bù trừ chênh lệch
+      const currentOffset = dayjs().unix() - currentItem.created;
+      const minOffset = dayjs().unix() - minItem.created;
+      return currentItem.time - currentOffset < minItem.time - minOffset
+        ? currentItem
+        : minItem;
+    }, countdownList[0]);
+    const offset = dayjs().unix() - minTimeCountdown.created;
+    const countdown = minTimeCountdown.time - offset;
+    process.stdout.write(
+      colors.white(
+        `[${dayjs().format(
+          "DD-MM-YYYY HH:mm:ss"
+        )}] Đã chạy hết các luồng, cần chờ: ${colors.blue(
+          datetimeHelper.formatTime(countdown)
+        )}     \r`
+      )
+    );
+  } else {
+    isLog = false;
+  }
+}, 1000);
+
+process.on("SIGINT", () => {
+  console.log("");
+  process.stdout.write("\x1b[K"); // Xóa dòng hiện tại từ con trỏ đến cuối dòng
+  process.exit(); // Thoát khỏi quá trình
+});
+setInterval(() => {}, 1000); // Để script không kết thúc ngay

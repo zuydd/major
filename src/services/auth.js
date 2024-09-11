@@ -20,7 +20,6 @@ class AuthService {
       }
       return null;
     } catch (error) {
-      console.log(error);
       if (!skipLog) {
         user.log.logError(
           `Đăng nhập thất bại: ${error.response?.data?.detail}`
