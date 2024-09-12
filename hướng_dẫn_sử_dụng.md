@@ -9,21 +9,20 @@ https://github.com/zuydd/blum
 
 **_ Các lệnh chức năng chạy tool _**
 
-- npm run start: dùng để chạy farming/claim, làm nhiệm vụ, điểm danh hàng ngày, chơi game, claim điểm invite.... tóm lại game có gì là nó làm cái đó
+- npm run start: Dùng để làm nhiệm vụ, điểm danh, chơi game,.... tóm lại game có gì là nó làm cái đó
 
 🕹️ Các tính năng có trong tool:
 
-- tự động ttham gia tribe để nhận thêm 10% điểm thưởng
-- điểm danh hàng ngày
+- tự động điểm danh hàng ngày
 - tự động làm nhiệm vụ
-- tự động farming/claim khi tới giờ
-- tự động chơi game
-- claim điểm invite
+- tự động chơi game khi tới giờ (các game có thể chơi: Hold Coin, Roulette, Swipe Coin, Durov)
 - nhận diện proxy tự động, tự động kết nối lại proxy khi bị lỗi. ae ai chạy proxy thì thêm vào file proxy.txt ở dòng ứng với dòng chứa acc muốn chạy proxy đó, acc nào không muốn chạy proxy thì để trống hoặc gõ skip vào
-- đa luồng chạy bao nhiêu acc cũng được, không bị block lẫn nhau. Ban đầu khi bắt đầu mỗi luồng sẽ chạy cách nhau 30s, bạn có thể tìm DELAY_ACC = 30 để sửa lại cho phù hợp.
+- đa luồng chạy bao nhiêu acc cũng được, không bị block lẫn nhau, lặp lại khi tới thời gian chơi game
+- hiển thị đếm ngược tới lần chạy tiếp theo, có thể tìm biến IS_SHOW_COUNTDOWN = true đổi thành false để tắt cho đỡ lag
 
 ⚠️ Lưu ý:
 
-- Nếu gặp lỗi đăng nhập, làm nhiệm vụ hay chơi game thì là do server của blum nó lỏ chứ không phải lỗi tool, cứ kệ nó, hồi nó quay lại làm sau khi hết lỗi.
-- Vì server nó hay lỗi vào khung giờ 14h-24h nên khuyến khích ae chạy tool lần đầu vào khung giờ 4h-12h để chạy mượt mà nhé
-- Nếu gặp lỗi đăng nhập không thành công nhiều lần, hãy thử xoá token và lấy lại user hoặc query_id mới
+- Game Durov có combo trả lời đổi mỗi ngày nên tool sẽ bắt đầu chạy task này từ 9h sáng thay vì 7h sáng để có đủ thời gian cập nhật combo mới
+- Có nhiều nhiệm vụ yêu cầu phải làm thủ công, không claim láo được nên đừng thắc mắc sao còn nhiều nhiệm vụ chưa làm thế.
+- Nếu gặp lỗi 5xx khi chơi game thì kệ nó, điểm vẫn được tính, do server lỏ thôi
+- Vì server nó hay lỗi vặt nên đừng bất ngờ khi thấy các lỗi 5xx nhé
