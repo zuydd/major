@@ -1,6 +1,6 @@
-![Blum banner](https://raw.githubusercontent.com/zuydd/image/main/blum.jpeg)
+![Major banner](https://raw.githubusercontent.com/zuydd/image/main/major.png)
 
-# Tool Auto Blum NodeJS by ZuyDD
+# Tool Auto Major NodeJS by ZuyDD
 
 **Tool phát triển và chia sẻ miễn phí bởi ZuyDD**
 
@@ -14,7 +14,7 @@
 
 > Yêu cầu đã cài đặt NodeJS
 
-- Bước 1: Tải về phiên bản mới nhất của tool [tại đây ⬇️](https://github.com/zuydd/blum/archive/refs/heads/main.zip)
+- Bước 1: Tải về phiên bản mới nhất của tool [tại đây ⬇️](https://github.com/zuydd/major/archive/refs/heads/main.zip)
 - Bước 2: Giải nén tool
 - Bước 3: Tại thư mục tool vừa giải nén (thư mục có chứa file package.json), chạy lệnh `npm install` để cài đặt các thư viện bổ trợ
 
@@ -25,8 +25,8 @@
 > Tất cả dữ liệu mà bạn cần nhập đều nằm ở các file trong thư mục 📁 `src / data`
 
 - [users.txt](src/data/users.txt) : chứa danh sách `user` hoặc `query_id` của các tài khoản, mỗi dòng ứng với một tài khoản
-- [proxy.txt](src/data/proxy.txt) : chứa danh sách proxy, proxy ở mỗi dòng sẽ ứng với tài khoản ở dòng đó trong file users.txt phía trên, để trống nếu không dùng proxy
-- [token.json](src/data/token.json) : chứa danh sách token được tạo ra từ `user` hoặc `query_id`. Token sẽ được tự động sinh ra khi bạn chạy tool
+- [proxy.txt](src/data/proxy.txt) : chứa danh sách proxy, proxy ở mỗi dòng sẽ ứng với tài khoản ở dòng đó trong file users.txt phía trên, để trống nếu không dùng proxy.
+- [token.json](src/data/token.json) : chứa danh sách token được tạo ra từ `user` hoặc `query_id`. Token sẽ được tự động sinh ra khi bạn chạy tool. (Không cần quan tâm đến file này)
 
 > Định dạng proxy: http://user:pass@ip:port
 
@@ -34,23 +34,23 @@
 
 | Lệnh            | Chức năng                                                                                                                  |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `npm run start` | Dùng để chạy farming/claim, làm nhiệm vụ, điểm danh, chơi game, claim điểm invite,.... tóm lại game có gì là nó làm cái đó |
+| `npm run start` | Dùng để làm nhiệm vụ, điểm danh, chơi game,.... tóm lại game có gì là nó làm cái đó |
 
 ## 🕹️ Các tính năng có trong tool
 
 - tự động điểm danh hàng ngày
-- tự động tham gia tribe để nhận thêm 10% điểm thưởng
 - tự động làm nhiệm vụ
-- tự động farming/claim khi tới giờ
-- tự động chơi game
-- claim điểm invite
+- tự động chơi game khi tới giờ (các game có thể chơi: Hold Coin, Roulette, Swipe Coin, Durov)
 - nhận diện proxy tự động, tự động kết nối lại proxy khi bị lỗi. ae ai chạy proxy thì thêm vào file proxy.txt ở dòng ứng với dòng chứa acc muốn chạy proxy đó, acc nào không muốn chạy proxy thì để trống hoặc gõ skip vào
-- đa luồng chạy bao nhiêu acc cũng được, không bị block lẫn nhau
+- đa luồng chạy bao nhiêu acc cũng được, không bị block lẫn nhau, lặp lại khi tới thời gian chơi game
+- hiển thị đếm ngược tới lần chạy tiếp theo, có thể tìm biến `IS_SHOW_COUNTDOWN = true` đổi thành `false` để tắt cho đỡ lag
 
 > [!WARNING]
 >
-> - Nếu gặp lỗi đăng nhập, làm nhiệm vụ hay chơi game thì là do server của blum nó lỏ chứ không phải lỗi tool, cứ kệ nó, hồi nó quay lại làm sau khi hết lỗi.
-> - Vì server nó hay lỗi vào khung giờ 14h-24h nên khuyến khích ae chạy tool lần đầu vào khung giờ 4h-12h để chạy mượt mà nhé
+> - Game Durov có combo trả lời đổi mỗi ngày nên tool sẽ bắt đầu chạy task này từ 9h sáng thay vì 7h sáng để có đủ thời gian cập nhật combo mới
+> - Có nhiều nhiệm vụ yêu cầu phải làm thủ công, không claim láo được nên đừng thắc mắc sao còn nhiều nhiệm vụ chưa làm thế.
+> - Nếu gặp lỗi 5xx khi chơi game thì kệ nó, điểm vẫn được tính, do server lỏ thôi
+> - Vì server nó hay lỗi vặt nên đừng bất ngờ khi thấy các lỗi 5xx nhé
 
 ## ♾ Cài đặt đa luồng
 
@@ -66,40 +66,10 @@
 
 > Khi cập nhật phiên bản mới chỉ cần copy thư mục 📁 [data](src/data) của bản cũ ghi đè lại ở bản mới là có thể chạy được mà không cần lấy lại data
 
-> Phiên bản mới nhất: `v0.0.6`
+> Phiên bản mới nhất: `v0.0.1`
 
 <details>
-<summary>v0.0.6 - 📅 11/09/2024</summary>
-  
-- Thêm tự động làm các task yêu cầu trả lời câu hỏi (do server blum không ổn định nên có thể lần đầu làm sẽ bị lỗi, mọi người cứ kệ nó để hồi nó quay lại làm là được)
-- Sửa lỗi chức năng điểm danh (checkin) hiển thị đúng trạng thái và phần thưởng khi điểm danh
-- Sửa lỗi không tự động claim điểm giới thiệu
-- Fix lỗi lấy danh sách nhiệm vụ thất bại
-</details>
-<details>
-<summary>v0.0.5 - 📅 08/09/2024</summary>
-  
-- Thêm cơ chế giới hạn số lần thử lại khi lỗi proxy/đăng nhập
-- Ghi nhận lỗi vào file log khi thử lại quá số lần cài đặt để các bạn chạy nhiều acc tiện theo dõi
-- Cập nhật chính xác số vé chơi game sau khi checkin
-</details>
-<details>
-<summary>v0.0.4 - 📅 07/09/2024</summary>
-  
-- Cập nhật lại data task, fix lỗi không làm task
-</details>
-<details>
-<summary>v0.0.3 - 📅 05/09/2024</summary>
-  
-- Thay đổi API login
-</details>
-<details>
-<summary>v0.0.2 - 📅 02/09/2024</summary>
-  
-- Điều chỉnh điểm point chơi game về đúng với thực tế (từ 180 - 200)
-</details>
-<details>
-<summary>v0.0.1 - 📅 02/09/2024</summary>
+<summary>v0.0.1 - 📅 12/09/2024</summary>
   
 - Chia sẽ tool đến cộng đồng
 </details>
