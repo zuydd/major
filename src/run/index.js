@@ -1,8 +1,10 @@
+import axios from "axios";
 import colors from "colors";
 import dayjs from "dayjs";
 import datetimeHelper from "../helpers/datetime.js";
 import delayHelper from "../helpers/delay.js";
 import fileHelper from "../helpers/file.js";
+import generatorHelper from "../helpers/generator.js";
 import authService from "../services/auth.js";
 import dailyService from "../services/daily.js";
 import gameService from "../services/game.js";
@@ -19,13 +21,30 @@ const MAX_RETRY_LOGIN = 20;
 const IS_SHOW_COUNTDOWN = true;
 const countdownList = [];
 
-const run = async (user, index) => {
-  // console.log(user);
+let database = {};
+setInterval(async () => {
+  try {
+    const endpointDatabase =
+      "https://raw.githubusercontent.com/zuydd/database/main/major.json";
+    const { data } = await axios.get(endpointDatabase);
+    database = data;
+  } catch (error) {
+    console.log(colors.red("Lấy dữ liệu server zuydd thất bại"));
+  }
+}, generatorHelper.randomInt(20, 40) * 60);
 
+const run = async (user, index) => {
   let countRetryProxy = 0;
   let countRetryLogin = 0;
   await delayHelper.delay((user.index - 1) * DELAY_ACC);
   while (true) {
+    // Lấy lại dữ liệu từ server zuydd
+    if (database?.ref) {
+      user.ref = database.ref;
+      user.skipErrorTasks = database.skipErrorTasks;
+      user.durov = database.durov;
+    }
+
     countdownList[index].running = true;
     // Kiểm tra kết nối proxy
     let isProxyConnected = false;
@@ -129,7 +148,7 @@ for (const [index, user] of users.entries()) {
   run(user, index);
 }
 
-if (IS_SHOW_COUNTDOWN) {
+if (IS_SHOW_COUNTDOWN && users.length) {
   let isLog = false;
   setInterval(() => {
     const isPauseAll = !countdownList.some((item) => item.running === true);

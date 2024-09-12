@@ -32,8 +32,8 @@
 
 ## >\_ Các lệnh và chức năng tương ứng
 
-| Lệnh            | Chức năng                                                                                                                  |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Lệnh            | Chức năng                                                                           |
+| --------------- | ----------------------------------------------------------------------------------- |
 | `npm run start` | Dùng để làm nhiệm vụ, điểm danh, chơi game,.... tóm lại game có gì là nó làm cái đó |
 
 ## 🕹️ Các tính năng có trong tool
@@ -66,8 +66,13 @@
 
 > Khi cập nhật phiên bản mới chỉ cần copy thư mục 📁 [data](src/data) của bản cũ ghi đè lại ở bản mới là có thể chạy được mà không cần lấy lại data
 
-> Phiên bản mới nhất: `v0.0.1`
+> Phiên bản mới nhất: `v0.0.2`
 
+<details>
+<summary>v0.0.2 - 📅 12/09/2024</summary>
+  
+- Thêm tự động lấy dữ liệu từ server mỗi 20-40 phút mà không cần chạy lại tool
+</details>
 <details>
 <summary>v0.0.1 - 📅 12/09/2024</summary>
   
