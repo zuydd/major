@@ -15,6 +15,8 @@ const DELAY_ACC = 10;
 const MAX_RETRY_PROXY = 20;
 // Đặt số lần thử đăng nhập tối đa khi đăng nhập lỗi, nếu thử lại quá số lần cài đặt sẽ dừng chạy tài khoản đó và ghi lỗi vào file log
 const MAX_RETRY_LOGIN = 20;
+// Cài đặt đếm ngược đến lần chạy tiếp theo
+const IS_SHOW_COUNTDOWN = true;
 const countdownList = [];
 
 const run = async (user, index) => {
@@ -127,44 +129,48 @@ for (const [index, user] of users.entries()) {
   run(user, index);
 }
 
-let isLog = false;
-setInterval(() => {
-  const isPauseAll = !countdownList.some((item) => item.running === true);
+if (IS_SHOW_COUNTDOWN) {
+  let isLog = false;
+  setInterval(() => {
+    const isPauseAll = !countdownList.some((item) => item.running === true);
 
-  if (isPauseAll) {
-    if (!isLog) {
-      console.log(
-        "========================================================================================="
+    if (isPauseAll) {
+      if (!isLog) {
+        console.log(
+          "========================================================================================="
+        );
+        isLog = true;
+      }
+      const minTimeCountdown = countdownList.reduce((minItem, currentItem) => {
+        // bù trừ chênh lệch
+        const currentOffset = dayjs().unix() - currentItem.created;
+        const minOffset = dayjs().unix() - minItem.created;
+        return currentItem.time - currentOffset < minItem.time - minOffset
+          ? currentItem
+          : minItem;
+      }, countdownList[0]);
+      const offset = dayjs().unix() - minTimeCountdown.created;
+      const countdown = minTimeCountdown.time - offset;
+      process.stdout.write("\x1b[K");
+      process.stdout.write(
+        colors.white(
+          `[${dayjs().format(
+            "DD-MM-YYYY HH:mm:ss"
+          )}] Đã chạy hết các luồng, cần chờ: ${colors.blue(
+            datetimeHelper.formatTime(countdown)
+          )}     \r`
+        )
       );
-      isLog = true;
+    } else {
+      isLog = false;
     }
-    const minTimeCountdown = countdownList.reduce((minItem, currentItem) => {
-      // bù trừ chênh lệch
-      const currentOffset = dayjs().unix() - currentItem.created;
-      const minOffset = dayjs().unix() - minItem.created;
-      return currentItem.time - currentOffset < minItem.time - minOffset
-        ? currentItem
-        : minItem;
-    }, countdownList[0]);
-    const offset = dayjs().unix() - minTimeCountdown.created;
-    const countdown = minTimeCountdown.time - offset;
-    process.stdout.write(
-      colors.white(
-        `[${dayjs().format(
-          "DD-MM-YYYY HH:mm:ss"
-        )}] Đã chạy hết các luồng, cần chờ: ${colors.blue(
-          datetimeHelper.formatTime(countdown)
-        )}     \r`
-      )
-    );
-  } else {
-    isLog = false;
-  }
-}, 1000);
+  }, 1000);
 
-process.on("SIGINT", () => {
-  console.log("");
-  process.stdout.write("\x1b[K"); // Xóa dòng hiện tại từ con trỏ đến cuối dòng
-  process.exit(); // Thoát khỏi quá trình
-});
+  process.on("SIGINT", () => {
+    console.log("");
+    process.stdout.write("\x1b[K"); // Xóa dòng hiện tại từ con trỏ đến cuối dòng
+    process.exit(); // Thoát khỏi quá trình
+  });
+}
+
 setInterval(() => {}, 1000); // Để script không kết thúc ngay

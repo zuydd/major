@@ -114,6 +114,10 @@ class TaskService {
         return false;
       }
     } catch (error) {
+      if (error.response?.status === 520) {
+        return;
+      }
+
       user.log.logError(
         `Làm nhiệm vụ ${colors.blue(task?.title)} - ${colors.gray(
           `[${task.id}]`

@@ -37,7 +37,7 @@ class GameService {
         user.log.logError(
           `Chơi game Hold Coin thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
         );
-        return 10;
+        return error.response?.status === 520 ? -1 : 10;
       }
     }
   }
@@ -58,10 +58,23 @@ class GameService {
         throw new Error(`Chơi game Roulette thất bại`);
       }
     } catch (error) {
-      user.log.logError(
-        `Nhận thưởng chơi game Roulette thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
-      );
-      return false;
+      if (error.response?.status === 400 && error.response?.data?.detail) {
+        const until =
+          Math.floor(error.response?.data?.detail.blocked_until) * 1000;
+
+        const diffTime = dayjs(until).diff(dayjs(), "minutes");
+        user.log.log(
+          `Đã hết lượt chơi game Hold Coin, chờ lượt mới sau: ${colors.blue(
+            diffTime + ` phút`
+          )}`
+        );
+        return diffTime;
+      } else {
+        user.log.logError(
+          `Nhận thưởng chơi game Roulette thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
+        );
+        return false;
+      }
     }
   }
 
@@ -94,7 +107,7 @@ class GameService {
         user.log.logError(
           `Chơi game Roulette thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
         );
-        return 10;
+        return error.response?.status === 520 ? -1 : 10;
       }
     }
   }
@@ -113,10 +126,23 @@ class GameService {
         throw new Error(`Chơi game Roulette thất bại`);
       }
     } catch (error) {
-      user.log.logError(
-        `Nhận thưởng chơi game Roulette thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
-      );
-      return false;
+      if (error.response?.status === 400 && error.response?.data?.detail) {
+        const until =
+          Math.floor(error.response?.data?.detail.blocked_until) * 1000;
+
+        const diffTime = dayjs(until).diff(dayjs(), "minutes");
+        user.log.log(
+          `Đã hết lượt chơi game Roulette, chờ lượt mới sau: ${colors.blue(
+            diffTime + ` phút`
+          )}`
+        );
+        return diffTime;
+      } else {
+        user.log.logError(
+          `Nhận thưởng chơi game Roulette thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
+        );
+        return false;
+      }
     }
   }
 
@@ -149,7 +175,7 @@ class GameService {
         user.log.logError(
           `Chơi game Swipe Coin thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
         );
-        return 10;
+        return error.response?.status === 520 ? -1 : 10;
       }
     }
   }
@@ -170,10 +196,23 @@ class GameService {
         throw new Error(`Chơi game Swipe Coin thất bại`);
       }
     } catch (error) {
-      user.log.logError(
-        `Nhận thưởng chơi game Swipe Coin thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
-      );
-      return false;
+      if (error.response?.status === 400 && error.response?.data?.detail) {
+        const until =
+          Math.floor(error.response?.data?.detail.blocked_until) * 1000;
+
+        const diffTime = dayjs(until).diff(dayjs(), "minutes");
+        user.log.log(
+          `Đã hết lượt chơi game Swipe Coin, chờ lượt mới sau: ${colors.blue(
+            diffTime + ` phút`
+          )}`
+        );
+        return diffTime;
+      } else {
+        user.log.logError(
+          `Nhận thưởng chơi game Swipe Coin thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
+        );
+        return false;
+      }
     }
   }
 
@@ -204,7 +243,7 @@ class GameService {
         user.log.logError(
           `Chơi game Durov thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
         );
-        return 10;
+        return error.response?.status === 520 ? -1 : 10;
       }
     }
   }
@@ -241,10 +280,23 @@ class GameService {
         throw new Error(`Chơi game Durov thất bại`);
       }
     } catch (error) {
-      user.log.logError(
-        `Nhận thưởng chơi game Durov thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
-      );
-      return false;
+      if (error.response?.status === 400 && error.response?.data?.detail) {
+        const until =
+          Math.floor(error.response?.data?.detail.blocked_until) * 1000;
+
+        const diffTime = dayjs(until).add(2, "hour").diff(dayjs(), "minutes");
+        user.log.log(
+          `Đã hết lượt chơi game Durov, chờ lượt mới sau: ${colors.blue(
+            diffTime + ` phút`
+          )}`
+        );
+        return diffTime;
+      } else {
+        user.log.logError(
+          `Nhận thưởng chơi game Durov thất bại: ${error.response?.status} - ${error.response?.data?.detail}`
+        );
+        return false;
+      }
     }
   }
 
@@ -318,6 +370,11 @@ class GameService {
         countdown = infoGameDurov;
       }
     } else if (20 < countdown) {
+      user.log.log(
+        colors.yellow(
+          "Chưa có combo Durov, liên hệ chủ tool @zuydd để yêu cầu update"
+        )
+      );
       countdown = 20;
     }
     return countdown;
