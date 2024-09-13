@@ -31,7 +31,7 @@ setInterval(async () => {
   } catch (error) {
     console.log(colors.red("Lấy dữ liệu server zuydd thất bại"));
   }
-}, generatorHelper.randomInt(20, 40) * 60);
+}, generatorHelper.randomInt(20, 40) * 60 * 1000);
 
 const run = async (user, index) => {
   let countRetryProxy = 0;
