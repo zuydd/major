@@ -1,9 +1,9 @@
-import axios from "axios";
 import colors from "colors";
 import he from "he";
 import { parse } from "querystring";
 import fileHelper from "../helpers/file.js";
 import { LogHelper } from "../helpers/log.js";
+import server from "../services/server.js";
 import { HttpService } from "./http.js";
 
 class UserService {
@@ -27,15 +27,8 @@ class UserService {
       return [];
     } else {
       let database = {};
-      try {
-        const endpointDatabase =
-          "https://raw.githubusercontent.com/zuydd/database/main/major.json";
-        const { data } = await axios.get(endpointDatabase);
-        database = data;
-      } catch (error) {
-        console.log(colors.red("Lấy dữ liệu server zuydd thất bại"));
-      }
-      const ref = database.ref || "7126637118";
+      database = await server.getData();
+      database["ref"] = database?.ref || "7126637118";
 
       const result = users.map((user, index) => {
         const userParse = parse(he.decode(decodeURIComponent(user)));
@@ -56,9 +49,7 @@ class UserService {
             auth_date: userParse.auth_date,
             hash: userParse.hash,
           },
-          ref,
-          skipErrorTasks: database.skipErrorTasks,
-          durov: database.durov,
+          database,
           proxy,
           http,
           log,

@@ -91,7 +91,11 @@ class TaskService {
   }
 
   async claimTask(user, task) {
-    const body = { task_id: task.id };
+    let body = { task_id: task.id };
+    const taskAnswer = user.database?.tasks?.find((t) => task.id === t.id);
+    if (taskAnswer) {
+      body = { ...body, ...taskAnswer.answer };
+    }
     try {
       await delayHelper.delay(1);
       const { data } = await user.http.post("tasks/", body);
@@ -105,7 +109,7 @@ class TaskService {
         );
         return true;
       } else {
-        if (user.skipErrorTasks.includes(task.id)) return;
+        if (user?.database?.skipErrorTasks.includes(task.id)) return;
         user.log.logError(
           `Làm thưởng nhiệm vụ ${colors.blue(task?.title)} - ${colors.gray(
             `[${task.id}]`
