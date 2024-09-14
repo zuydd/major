@@ -72,7 +72,7 @@
 <summary>v0.0.4 - 📅 14/09/2024</summary>
   
 - Thêm làm task xem video youtube nhập code
-- Thêm thống báo từ hệ thống và kiểm tra version
+- Thêm thông báo từ hệ thống và kiểm tra version
 </details>
 <details>
 <summary>v0.0.3 - 📅 13/09/2024</summary>
