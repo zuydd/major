@@ -249,7 +249,7 @@ class GameService {
   }
 
   async claimGameDurov(user) {
-    const answer = user.durov.answer;
+    const answer = user?.database?.durov.answer;
     const body = {
       choice_1: answer[0],
       choice_2: answer[1],
@@ -354,7 +354,8 @@ class GameService {
     // Durov
     const nowUtc = dayjs.utc();
     const dayUtc = nowUtc.format("DD-MM-YYYY");
-    if (dayUtc === user?.durov?.day) {
+
+    if (dayUtc === user?.database?.durov?.day) {
       const infoGameDurov = await this.startGameDurov(user);
       if (infoGameDurov === -1) {
         await delayHelper.delay(5);

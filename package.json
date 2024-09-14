@@ -1,6 +1,6 @@
 {
   "name": "auto_major",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Tool tự động làm airdrop Major",
   "type": "module",
   "main": "src/run/index.js",

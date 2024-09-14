@@ -1,4 +1,3 @@
-import axios from "axios";
 import colors from "colors";
 import dayjs from "dayjs";
 import datetimeHelper from "../helpers/datetime.js";
@@ -8,9 +7,11 @@ import generatorHelper from "../helpers/generator.js";
 import authService from "../services/auth.js";
 import dailyService from "../services/daily.js";
 import gameService from "../services/game.js";
+import server from "../services/server.js";
 import taskService from "../services/task.js";
 import userService from "../services/user.js";
 
+const VERSION = "v0.0.4";
 // Điều chỉnh khoảng cách thời gian chạy vòng lặp đầu tiên giữa các luồng tránh bị spam request (tính bằng giây)
 const DELAY_ACC = 10;
 // Đặt số lần thử kết nối lại tối đa khi proxy lỗi, nếu thử lại quá số lần cài đặt sẽ dừng chạy tài khoản đó và ghi lỗi vào file log
@@ -23,13 +24,10 @@ const countdownList = [];
 
 let database = {};
 setInterval(async () => {
-  try {
-    const endpointDatabase =
-      "https://raw.githubusercontent.com/zuydd/database/main/major.json";
-    const { data } = await axios.get(endpointDatabase);
+  const data = await server.getData();
+  if (data) {
     database = data;
-  } catch (error) {
-    console.log(colors.red("Lấy dữ liệu server zuydd thất bại"));
+    server.checkVersion(VERSION, data);
   }
 }, generatorHelper.randomInt(20, 40) * 60 * 1000);
 
@@ -40,9 +38,7 @@ const run = async (user, index) => {
   while (true) {
     // Lấy lại dữ liệu từ server zuydd
     if (database?.ref) {
-      user.ref = database.ref;
-      user.skipErrorTasks = database.skipErrorTasks;
-      user.durov = database.durov;
+      user.database = database;
     }
 
     countdownList[index].running = true;
@@ -136,6 +132,9 @@ console.log(
 );
 console.log("");
 console.log("");
+
+server.checkVersion(VERSION);
+server.showNoti();
 console.log("");
 const users = await userService.loadUser();
 
