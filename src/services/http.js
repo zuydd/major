@@ -41,6 +41,7 @@ export class HttpService {
     }
     const config = {
       headers,
+      withCredentials: false,
     };
     if (this.proxy && this.proxy !== "skip") {
       config["httpsAgent"] = new HttpsProxyAgent(this.proxy);
