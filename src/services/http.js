@@ -1,5 +1,6 @@
 import axios from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import delayHelper from "../helpers/delay.js";
 
 export class HttpService {
   constructor(log, proxy = null) {
@@ -41,7 +42,6 @@ export class HttpService {
     }
     const config = {
       headers,
-      withCredentials: false,
     };
     if (this.proxy && this.proxy !== "skip") {
       config["httpsAgent"] = new HttpsProxyAgent(this.proxy);
@@ -49,13 +49,15 @@ export class HttpService {
     return config;
   }
 
-  get(endPoint) {
+  async get(endPoint) {
+    await delayHelper.delay(1);
     const url = this.baseURL + endPoint;
     const config = this.initConfig();
     return axios.get(url, config);
   }
 
-  post(endPoint, body) {
+  async post(endPoint, body) {
+    await delayHelper.delay(1);
     const url = this.baseURL + endPoint;
     const config = this.initConfig();
     return axios.post(url, body, config);
