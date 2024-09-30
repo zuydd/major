@@ -41,20 +41,24 @@ class AuthService {
         access: token,
       };
       const profile = await this.handleAfterLogin(user, info);
-      return {
-        status: 1,
-        profile,
-      };
+      if (profile) {
+        return {
+          status: 1,
+          profile,
+        };
+      }
     }
 
     let infoLogin = await this.login(user);
 
     if (infoLogin) {
       const profile = await this.handleAfterLogin(user, infoLogin);
-      return {
-        status: 1,
-        profile,
-      };
+      if (profile) {
+        return {
+          status: 1,
+          profile,
+        };
+      }
     }
     user.log.logError(
       "Quá trình đăng nhập thất bại, vui lòng kiểm tra lại thông tin tài khoản (có thể cần phải lấy mới query_id). Hệ thống sẽ thử đăng nhập lại sau 60s"

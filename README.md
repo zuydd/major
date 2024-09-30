@@ -66,8 +66,14 @@
 
 > Khi cập nhật phiên bản mới chỉ cần copy thư mục 📁 [data](src/data) của bản cũ ghi đè lại ở bản mới là có thể chạy được mà không cần lấy lại data
 
-> Phiên bản mới nhất: `v0.0.5`
+> Phiên bản mới nhất: `v0.0.6`
 
+<details>
+<summary>v0.0.6 - 📅 30/09/2024</summary>
+  
+- Thêm thử đăng nhập lại khi lỗi
+- Thêm delay 1s cho mỗi request, bạn sẽ thấy tool chạy chậm hơn nhưng nó đảm bảo tool ổn định hơn
+</details>
 <details>
 <summary>v0.0.5 - 📅 29/09/2024</summary>
   
